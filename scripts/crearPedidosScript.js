@@ -1,11 +1,17 @@
-let botones = document.querySelectorAll("button[role=obtenerContenido]");
-if(botones.length > 0) obtenerDatos(1);
-botones.forEach(boton => {
-  boton.addEventListener("click", () => {
-    botones.forEach(boton => { boton.classList.remove("btnToggle"); });
-    boton.classList.add("btnToggle");
-    obtenerDatos(boton.getAttribute('data-obtenerContenido'));
+window.addEventListener("load", function() {
+  let botones = document.querySelectorAll("button[role=obtenerContenido]");
+  botones.forEach(boton => {
+    boton.addEventListener("click", () => {
+      botones.forEach(boton => { boton.classList.remove("btnToggle"); });
+      boton.classList.add("btnToggle");
+      obtenerDatos(boton.getAttribute('data-obtenerContenido'));
+    });
   });
+  if(botones.length > 0) {
+    let pagina = 2;
+    botones[pagina-1].classList.add("btnToggle");
+    obtenerDatos(pagina);
+  }
 });
 
 function obtenerDatos(categoria) {
@@ -18,7 +24,7 @@ function obtenerDatos(categoria) {
       data.forEach(articulo => {
         let cantidad = document.getElementById(articulo.id).value;
         document.getElementById("contenido").innerHTML += `
-          <div>
+          <article>
             <h3>${articulo.articulo}</h3>
             <p>$${articulo.precio}</p>
             <div class="contador">
@@ -26,7 +32,7 @@ function obtenerDatos(categoria) {
               <span class="contador__valor" data-contador="${articulo.id}">${cantidad}</span>
               <button type="button" class="contador__incrementar">+</button>
             </div>
-          </div>
+          </article>
         `;
       });
       
@@ -38,6 +44,14 @@ function obtenerDatos(categoria) {
         const actualizar = () => {
           campoVisible.textContent = cantidad;
           campoInvisible.value = cantidad;
+          
+          let articulos = document.querySelectorAll(".articulos");
+          let total = 0;
+
+          articulos.forEach(articulo => {
+            total += parseInt(articulo.value) * parseInt(articulo.getAttribute("data-precio"));
+          });
+          document.getElementById("total").textContent = "$" + String(total);
         }
         contador.querySelector('.contador__incrementar').addEventListener('click', () => {
           if (cantidad < 10) cantidad++;
@@ -54,6 +68,7 @@ function obtenerDatos(categoria) {
 }
 
 document.getElementById("aceptar").addEventListener("click", () => {
+  let total = document.getElementById("total").textContent;
   let tarjeta = document.getElementById("tarjeta").value;
   let formulario = document.getElementById("formulario");
   let seccion = document.createElement("section");
@@ -71,22 +86,25 @@ document.getElementById("aceptar").addEventListener("click", () => {
   contenedor.appendChild(titulo);
 
   if(tarjeta > 0) {
-    let subtitulo = document.createElement("h4");
-    let input = document.createElement("input");
-    let boton = document.createElement("button");
-    input.type = "number";
-    input.name = "pin";
-    input.min = 0;
-    boton.textContent = "Aceptar";
-    boton.type = "submit";
-    titulo.textContent = "El cliente ya ha abonado?";
-    subtitulo.textContent = "Introduzca el pin de seguridad para " + tarjeta
-    contenedor.appendChild(subtitulo);
-    contenedor.appendChild(input);
-    contenedor.appendChild(boton);
-  } else titulo.textContent = "Introduzca un numero de tarjeta";
+    if(total != "$0") {
+      let subtitulo = document.createElement("h4");
+      let input = document.createElement("input");
+      let boton = document.createElement("button");
+      input.type = "number";
+      input.name = "pin";
+      input.min = 0;
+      boton.textContent = "Aceptar";
+      boton.type = "submit";
+      titulo.textContent = "El cliente ya ha abonado? " + total;
+      subtitulo.textContent = "Introduzca el pin de seguridad para #" + tarjeta;
+      contenedor.appendChild(subtitulo);
+      contenedor.appendChild(input);
+      contenedor.appendChild(boton);
+    } else titulo.textContent = "El cliente no pidió nada";
+  } else titulo.textContent = "Introduzca un número de tarjeta";
 
   document.querySelector(".submit__blackscreen").addEventListener("click", () => {
     document.querySelector(".submit").remove();
   });
 });
+

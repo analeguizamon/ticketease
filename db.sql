@@ -39,8 +39,8 @@ CREATE TABLE `articulos` (
 --
 
 INSERT INTO `articulos` (`id`, `articulo`, `precio`, `categoria`) VALUES
-(1, 'hamburguesa simple', 1000, 1),
-(2, 'hamburguesa completa', 1500, 1),
+(1, 'hamburguesa s.', 1000, 1),
+(2, 'hamburguesa c.', 1500, 1),
 (3, 'pancho', 300, 1),
 (4, 'empanada', 250, 1),
 (5, 'coca-cola 2l', 1200, 2),
